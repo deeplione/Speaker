@@ -229,7 +229,7 @@ At the top, the Speakr logo and tagline "AI-Powered Audio Transcription & Note-T
 
 ### System Configuration
 
-This section provides complete transparency about your instance's capabilities. The Large Language Model field shows which AI model powers summaries and chat - here using the OpenRouter endpoint with a specific model. The Speech Recognition section details your transcription setup, showing whether you're using the standard Whisper API or advanced ASR endpoints. When ASR is enabled, you'll see additional configuration like the endpoint URL, indicating enhanced transcription features including speaker diarization.
+This section provides complete transparency about your instance's capabilities. The Large Language Model field shows which AI model powers summaries and chat - here using the OpenRouter endpoint with a specific model. The Speech Recognition section details your transcription setup, showing your ASR endpoint configuration. When ASR is enabled, you'll see additional configuration like the endpoint URL, indicating enhanced transcription features including speaker diarization.
 
 ### Project Links
 
@@ -237,7 +237,7 @@ Quick access buttons connect you to essential resources. The GitHub Repository b
 
 ### Key Features
 
-Colorful cards remind you of Speakr's core capabilities. Audio Transcription highlights support for both Whisper API and custom ASR with high accuracy. AI Summarization emphasizes the OpenRouter and Ollama integrations for flexible, powerful summary generation. Speaker Diarization showcases the ability to identify and label different speakers automatically. Interactive Chat demonstrates the conversational AI capabilities for exploring transcripts. Inquire Mode highlights semantic search across all recordings. Sharing & Export emphasizes the ability to share recordings and export to various formats.
+Colorful cards remind you of Speakr's core capabilities. Audio Transcription highlights support for open-source Whisper ASR with high accuracy. AI Summarization emphasizes the OpenRouter and Ollama integrations for flexible, powerful summary generation. Speaker Diarization showcases the ability to identify and label different speakers automatically. Interactive Chat demonstrates the conversational AI capabilities for exploring transcripts. Inquire Mode highlights semantic search across all recordings. Sharing & Export emphasizes the ability to share recordings and export to various formats.
 
 ### Using This Information
 

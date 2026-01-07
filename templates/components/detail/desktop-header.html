@@ -63,11 +63,13 @@
                         :title="useAsrEndpoint ? 'Reprocess with ASR' : 'Reprocess transcription'">
                     <i class="fas fa-redo-alt"></i>
                 </button>
+                {% if enable_llm_features %}
                 <button @click="confirmReprocess('summary', selectedRecording)" v-if="selectedRecording && selectedRecording.can_edit !== false && (selectedRecording.status === 'COMPLETED' || selectedRecording.status === 'FAILED')"
                         class="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
                         :title="t('buttons.reprocessSummary')">
                     <i class="fas fa-sync-alt"></i>
                 </button>
+                {% endif %}
                 <button @click="confirmReset(selectedRecording)" v-if="['PENDING', 'PROCESSING', 'SUMMARIZING', 'FAILED'].includes(selectedRecording.status)"
                         class="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors text-orange-500"
                         :title="t('buttons.resetStuckProcessing')">

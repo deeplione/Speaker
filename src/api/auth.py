@@ -19,6 +19,7 @@ import markdown
 
 from src.database import db
 from src.models import User, SystemSetting, GroupMembership
+from src.config.app_config import ENABLE_LLM_FEATURES
 from src.utils import password_check
 from src.auth.sso import (
     init_sso_client,
@@ -357,11 +358,11 @@ def account():
 
     # Get admin default prompt from system settings
     admin_default_prompt = SystemSetting.get_setting('admin_default_summary_prompt', None)
-    if admin_default_prompt:
+    if admin_default_prompt and ENABLE_LLM_FEATURES:
         default_summary_prompt_text = admin_default_prompt
     else:
         # Fallback to hardcoded default if admin hasn't set one
-        default_summary_prompt_text = """Generate a comprehensive summary that includes the following sections:
+        default_summary_prompt_text = "" if not ENABLE_LLM_FEATURES else """Generate a comprehensive summary that includes the following sections:
 - **Key Issues Discussed**: A bulleted list of the main topics
 - **Key Decisions Made**: A bulleted list of any decisions reached
 - **Action Items**: A bulleted list of tasks assigned, including who is responsible if mentioned"""
@@ -403,6 +404,7 @@ def account():
                            use_asr_endpoint=USE_ASR_ENDPOINT,
                            enable_auto_deletion=ENABLE_AUTO_DELETION,
                            enable_internal_sharing=ENABLE_INTERNAL_SHARING,
+                           enable_llm_features=ENABLE_LLM_FEATURES,
                            user_admin_groups=user_admin_groups,
                            asr_diarize_locked=asr_diarize_locked,
                            asr_diarize_env_value=ASR_DIARIZE,

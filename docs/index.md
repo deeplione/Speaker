@@ -30,7 +30,7 @@ Speakr is a powerful self-hosted transcription platform that helps you capture, 
   <div class="card">
     <div class="card-icon">🚀</div>
     <h3>Installation</h3>
-    <p>Step-by-step instructions for Docker and manual installation.</p>
+    <p>Step-by-step instructions for Docker installation.</p>
     <a href="getting-started/installation" class="card-link">Install Now →</a>
   </div>
   
@@ -218,7 +218,7 @@ Learn more about [audio synchronization features](user-guide/transcripts.md#audi
 
     Previous release (v0.5.7):
 
-    - **GPT-5 Support** - Full support for OpenAI's GPT-5 model family with automatic parameter detection
+    - **Flexible LLM Support** - Configure OpenRouter or self-hosted OpenAI-compatible providers
     - **Custom Summary Prompts on Reprocessing** - Experiment with different prompts when regenerating summaries
     - **PWA Enhancements** - Service worker for wake lock to prevent screen sleep on mobile
 

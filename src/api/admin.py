@@ -18,12 +18,13 @@ from src.utils import *
 from src.services.retention import is_recording_exempt_from_deletion, get_retention_days_for_recording, process_auto_deletion
 from src.services.embeddings import EMBEDDINGS_AVAILABLE, process_recording_chunks
 from src.config.startup import get_file_monitor_functions
+from src.config.app_config import ENABLE_LLM_FEATURES
 
 # Create blueprint
 admin_bp = Blueprint('admin', __name__)
 
 # Configuration from environment
-ENABLE_INQUIRE_MODE = os.environ.get('ENABLE_INQUIRE_MODE', 'false').lower() == 'true'
+ENABLE_INQUIRE_MODE = os.environ.get('ENABLE_INQUIRE_MODE', 'false').lower() == 'true' and ENABLE_LLM_FEATURES
 ENABLE_AUTO_DELETION = os.environ.get('ENABLE_AUTO_DELETION', 'false').lower() == 'true'
 USERS_CAN_DELETE = os.environ.get('USERS_CAN_DELETE', 'true').lower() == 'true'
 ENABLE_INTERNAL_SHARING = os.environ.get('ENABLE_INTERNAL_SHARING', 'false').lower() == 'true'
@@ -82,7 +83,8 @@ def admin():
                          inquire_mode_enabled=ENABLE_INQUIRE_MODE,
                          global_retention_days=GLOBAL_RETENTION_DAYS,
                          is_group_admin_only=False,
-                         user_language=user_language)
+                         user_language=user_language,
+                         enable_llm_features=ENABLE_LLM_FEATURES)
 
 
 @admin_bp.route('/group-management', methods=['GET'])
@@ -107,7 +109,8 @@ def group_management():
     return render_template('group-admin.html',
                          title='Group Management',
                          global_retention_days=GLOBAL_RETENTION_DAYS,
-                         user_language=user_language)
+                         user_language=user_language,
+                         enable_llm_features=ENABLE_LLM_FEATURES)
 
 
 
@@ -864,5 +867,4 @@ def admin_inquire_status():
         return jsonify({'error': str(e)}), 500
 
 # --- Group Management API (Admin Only) ---
-
 

@@ -391,7 +391,7 @@ from src.services.embeddings import (
     process_recording_chunks, basic_text_search_chunks, semantic_search_chunks
 )
 from src.services.llm import (
-    is_gpt5_model, is_using_openai_api, call_llm_completion, format_api_error_message
+    call_llm_completion, format_api_error_message
 )
 from src.services.document import process_markdown_to_docx
 from src.services.retention import (

@@ -463,6 +463,7 @@
                             </div>
                         </div>
 
+                        {% if enable_llm_features %}
                         <!-- Custom Prompt -->
                         <div>
                             <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">
@@ -476,6 +477,7 @@
                                 Recordings with this tag will use this prompt for AI summaries and chat.
                             </p>
                         </div>
+                        {% endif %}
 
                         <!-- Transcription Settings -->
                         <div class="grid grid-cols-3 gap-3">

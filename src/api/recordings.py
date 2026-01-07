@@ -22,7 +22,7 @@ from email.utils import encode_rfc2231
 from src.database import db
 from src.models import *
 from src.utils import *
-from src.config.app_config import ASR_MIN_SPEAKERS, ASR_MAX_SPEAKERS, ASR_DIARIZE
+from src.config.app_config import ASR_MIN_SPEAKERS, ASR_MAX_SPEAKERS, ASR_DIARIZE, ENABLE_LLM_FEATURES
 from src.tasks.processing import format_transcription_for_llm, transcribe_with_chunking
 from src.utils.ffmpeg_utils import FFmpegError, FFmpegNotFoundError
 from src.services.speaker import update_speaker_usage, identify_unidentified_speakers_from_text
@@ -39,7 +39,7 @@ from src.utils.audio_conversion import convert_if_needed
 recordings_bp = Blueprint('recordings', __name__)
 
 # Configuration from environment
-ENABLE_INQUIRE_MODE = os.environ.get('ENABLE_INQUIRE_MODE', 'false').lower() == 'true'
+ENABLE_INQUIRE_MODE = os.environ.get('ENABLE_INQUIRE_MODE', 'false').lower() == 'true' and ENABLE_LLM_FEATURES
 ENABLE_AUTO_DELETION = os.environ.get('ENABLE_AUTO_DELETION', 'false').lower() == 'true'
 DELETION_MODE = os.environ.get('DELETION_MODE', 'full_recording')  # 'audio_only' or 'full_recording'
 USERS_CAN_DELETE = os.environ.get('USERS_CAN_DELETE', 'true').lower() == 'true'
@@ -68,6 +68,12 @@ def init_recordings_helpers(**kwargs):
     csrf = kwargs.get('csrf')
     limiter = kwargs.get('limiter')
     chunking_service = kwargs.get('chunking_service')
+
+
+def _require_llm_features():
+    if not ENABLE_LLM_FEATURES:
+        return jsonify({'error': 'LLM features are disabled'}), 404
+    return None
 
 
 # --- Routes ---
@@ -204,6 +210,9 @@ def download_transcript_with_template(recording_id):
 @login_required
 def download_summary_word(recording_id):
     """Download recording summary as a Word document."""
+    llm_guard = _require_llm_features()
+    if llm_guard:
+        return llm_guard
     try:
         from docx import Document
         from docx.shared import Inches
@@ -316,6 +325,9 @@ def download_summary_word(recording_id):
 @login_required
 def download_chat_word(recording_id):
     """Download chat conversation as a Word document."""
+    llm_guard = _require_llm_features()
+    if llm_guard:
+        return llm_guard
     try:
         from docx import Document
         from docx.shared import Inches
@@ -567,6 +579,9 @@ def download_notes_word(recording_id):
 @login_required
 def generate_summary_endpoint(recording_id):
     """Generate summary for a recording that doesn't have one."""
+    llm_guard = _require_llm_features()
+    if llm_guard:
+        return llm_guard
     try:
         recording = db.session.get(Recording, recording_id)
         if not recording:
@@ -868,6 +883,9 @@ def update_transcript(recording_id):
 @recordings_bp.route('/recording/<int:recording_id>/auto_identify_speakers', methods=['POST'])
 @login_required
 def auto_identify_speakers(recording_id):
+    llm_guard = _require_llm_features()
+    if llm_guard:
+        return llm_guard
     """
     Automatically identifies speakers in a transcription using an LLM.
     Strips existing names and re-identifies all speakers from scratch.
@@ -1108,7 +1126,7 @@ def reprocess_transcription(recording_id):
                 'max_speakers': max_speakers
             }
         else:
-            # Standard Whisper API - no special params needed
+            # Standard transcription API - no special params needed
             job_params = {}
 
         job_id = job_queue.enqueue(
@@ -1145,6 +1163,9 @@ def reprocess_transcription(recording_id):
 @login_required
 def reprocess_summary(recording_id):
     """Reprocess summary for a given recording (requires existing transcription)."""
+    llm_guard = _require_llm_features()
+    if llm_guard:
+        return llm_guard
     try:
         recording = db.session.get(Recording, recording_id)
         if not recording:
@@ -1271,6 +1292,7 @@ def index():
                          inquire_mode_enabled=ENABLE_INQUIRE_MODE,
                          enable_archive_toggle=enable_archive_toggle,
                          enable_internal_sharing=ENABLE_INTERNAL_SHARING,
+                         enable_llm_features=ENABLE_LLM_FEATURES,
                          user_language=user_language,
                          is_team_admin=is_team_admin)
 
@@ -1960,7 +1982,7 @@ def upload_file():
         # Check size limit before saving - only enforce if chunking is disabled or using ASR endpoint
         max_content_length = current_app.config.get('MAX_CONTENT_LENGTH')
 
-        # Skip size check if chunking is enabled and using OpenAI Whisper API
+        # Skip size check if chunking is enabled and using transcription API
         should_enforce_size_limit = True
         if ENABLE_CHUNKING and chunking_service and not USE_ASR_ENDPOINT:
             should_enforce_size_limit = False
@@ -2678,6 +2700,9 @@ def get_audio(recording_id):
 @login_required
 def chat_with_transcription():
     """Chat with a specific recording's transcription."""
+    llm_guard = _require_llm_features()
+    if llm_guard:
+        return llm_guard
     try:
         data = request.json
         if not data:

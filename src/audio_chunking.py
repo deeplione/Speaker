@@ -1,5 +1,5 @@
 """
-Audio Chunking Service for Large File Processing with OpenAI Whisper API
+Audio Chunking Service for Large File Processing with OpenAI-compatible transcription APIs
 
 This module provides functionality to split large audio files into smaller chunks
 that comply with OpenAI's 25MB file size limit, process them individually,
@@ -23,7 +23,7 @@ from src.utils.ffmpeg_utils import convert_to_mp3, FFmpegError, FFmpegNotFoundEr
 logger = logging.getLogger(__name__)
 
 class AudioChunkingService:
-    """Service for chunking large audio files and processing them with OpenAI Whisper API."""
+    """Service for chunking large audio files and processing them with OpenAI-compatible transcription APIs."""
     
     def __init__(self, max_chunk_size_mb: int = 20, overlap_seconds: int = 3, max_chunk_duration_seconds: int = None):
         """
@@ -643,7 +643,7 @@ class AudioChunkingService:
                 
                 # Suggest possible causes
                 logger.info("Possible causes for slow processing:")
-                logger.info("- OpenAI API server load/performance variations")
+                logger.info("- API server load/performance variations")
                 logger.info("- Network latency or connection issues")
                 logger.info("- Audio content complexity (silence, noise, multiple speakers)")
                 logger.info("- Temporary API rate limiting or throttling")

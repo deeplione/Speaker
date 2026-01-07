@@ -110,17 +110,14 @@ wget https://raw.githubusercontent.com/murtaza-nasir/speakr/master/config/docker
 
 # Choose your transcription method and download the corresponding .env file:
 
-# Option 1: Standard Whisper API (no speaker diarization):
-wget https://raw.githubusercontent.com/murtaza-nasir/speakr/master/config/env.whisper.example -O .env
-
-# Option 2: WhisperX ASR with voice profiles (recommended for speaker features):
+# Option 1: WhisperX ASR with voice profiles (recommended for speaker features):
 wget https://raw.githubusercontent.com/murtaza-nasir/speakr/master/config/env.whisperx.example -O .env
 
-# Option 3: Basic ASR with diarization (no voice profiles):
+# Option 2: Basic ASR with diarization (no voice profiles):
 wget https://raw.githubusercontent.com/murtaza-nasir/speakr/master/config/env.asr.example -O .env
 
 # Configure your service endpoints and API keys
-nano .env  # Set API endpoints (Local/OpenAI/OpenRouter/etc) and add your API keys
+nano .env  # Set API endpoints (Local/OpenRouter/Ollama/etc) and add your API keys
 
 # Launch Speakr
 docker compose up -d
@@ -130,7 +127,12 @@ docker compose up -d
 
 **Note:** ASR option requires running an additional ASR service container alongside Speakr:
 - **For voice profiles & speaker embeddings:** Use [WhisperX ASR Service](https://github.com/murtaza-nasir/whisperx-asr-service) and set `ASR_RETURN_SPEAKER_EMBEDDINGS=true` in your `.env`
-- **For basic speaker diarization:** Use [OpenAI Whisper ASR Webservice](https://github.com/ahmetoner/whisper-asr-webservice) (speaker embeddings not supported)
+- **For basic speaker diarization:** Use [Whisper ASR Webservice](https://github.com/ahmetoner/whisper-asr-webservice) (speaker embeddings not supported)
+
+To start a basic Whisper ASR service quickly (auto-downloads the model on first run), use:
+```bash
+./scripts/start-whisper-asr.sh
+```
 
 > **⚠️ PyTorch 2.6 Users:** If you encounter a "Weights only load failed" error with WhisperX, add `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=true` to your ASR container's environment in docker-compose.yml. See [troubleshooting](https://murtaza-nasir.github.io/speakr/troubleshooting#pytorch-26-weights-loading-error-whisperx-asr-service) for details.
 
@@ -229,7 +231,7 @@ Complete documentation is available at **[murtaza-nasir.github.io/speakr](https:
 
 - **Backend**: Python/Flask with SQLAlchemy
 - **Frontend**: Vue.js 3 with Tailwind CSS
-- **AI/ML**: OpenAI Whisper, OpenRouter, Ollama support
+- **AI/ML**: Open-source Whisper ASR, OpenRouter, Ollama support
 - **Database**: SQLite (default) or PostgreSQL
 - **Deployment**: Docker, Docker Compose
 

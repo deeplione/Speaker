@@ -5,7 +5,7 @@
     "asrEnabled": "ASR Aktiviert",
     "asrEndpoint": "ASR-Endpunkt",
     "audioTranscription": "Audio-Transkription",
-    "audioTranscriptionDesc": "Whisper API und benutzerdefinierte ASR-Unterstützung mit hoher Genauigkeit",
+    "audioTranscriptionDesc": "Whisper ASR und benutzerdefinierte ASR-Unterstützung mit hoher Genauigkeit",
     "backend": "Backend",
     "database": "Datenbank",
     "deployment": "Bereitstellung",
@@ -36,13 +36,13 @@
     "technologyStack": "Technologie-Stack",
     "title": "Über",
     "version": "Version",
-    "whisperApi": "Whisper API"
+    "whisperApi": "Whisper ASR"
   },
   "aboutPageDetails": {
     "aiSummarizationDesc": "OpenRouter- und Ollama-Integration mit benutzerdefinierten Prompts",
     "asrEnabled": "ASR Aktiviert",
     "asrEndpoint": "ASR-Endpunkt",
-    "audioTranscriptionDesc": "Whisper-API und benutzerdefinierte ASR-Unterstützung mit hoher Genauigkeit",
+    "audioTranscriptionDesc": "Whisper-ASR und benutzerdefinierte ASR-Unterstützung mit hoher Genauigkeit",
     "backend": "Backend",
     "database": "Datenbank",
     "deployment": "Bereitstellung",
@@ -57,7 +57,7 @@
     "no": "Nein",
     "sharingExportDesc": "Aufnahmen teilen und in verschiedene Formate exportieren",
     "speakerDiarizationDesc": "Verschiedene Sprecher automatisch identifizieren und beschriften",
-    "whisperApi": "Whisper-API",
+    "whisperApi": "Whisper-ASR",
     "yes": "Ja"
   },
   "account": {

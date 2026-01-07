@@ -6,7 +6,7 @@ Speakr combines powerful transcription capabilities with intelligent AI features
 
 ### Multi-Engine Support
 
-Speakr supports multiple transcription engines to match your needs and budget. Use [OpenAI's Whisper API](getting-started.md#option-a-openai-whisper-configuration) for quick, cloud-based transcription with excellent accuracy. Deploy the [recommended ASR container](getting-started.md#option-b-custom-asr-endpoint-configuration) for advanced features like speaker diarization and local processing. See the [installation guide](getting-started/installation.md) for detailed setup instructions. The system automatically handles different audio formats, converting them as needed for optimal transcription quality.
+Speakr supports multiple transcription engines to match your needs and budget. Deploy the [recommended ASR container](getting-started.md#option-b-custom-asr-endpoint-configuration) for advanced features like speaker diarization and local processing. See the [installation guide](getting-started/installation.md) for detailed setup instructions. The system automatically handles different audio formats, converting them as needed for optimal transcription quality.
 
 ### Speaker Diarization
 
@@ -36,7 +36,7 @@ Transcribe content in dozens of languages with automatic detection or manual sel
 
 ### Automatic Summarization
 
-Every recording receives an AI-generated summary that captures key points, decisions, and action items. Configure this through [custom prompts](admin-guide/prompts.md). Users can also set [personal prompts](user-guide/settings.md#custom-prompts-tab) for their recordings. Summaries adapt to your content type - technical meetings get detailed technical summaries, while casual conversations receive lighter overviews. Custom prompts let you shape summaries to match your specific needs. For optimal results, Speakr supports [advanced AI models](admin-guide/model-configuration.md) including OpenAI's GPT-5 series with specialized parameters for reasoning depth and output verbosity.
+Every recording receives an AI-generated summary that captures key points, decisions, and action items. Configure this through [custom prompts](admin-guide/prompts.md). Users can also set [personal prompts](user-guide/settings.md#custom-prompts-tab) for their recordings. Summaries adapt to your content type - technical meetings get detailed technical summaries, while casual conversations receive lighter overviews. Custom prompts let you shape summaries to match your specific needs. For optimal results, Speakr supports [advanced AI models](admin-guide/model-configuration.md) including larger open models via OpenRouter or self-hosted providers.
 
 ### Event Extraction
 

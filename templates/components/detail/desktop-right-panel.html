@@ -27,6 +27,7 @@
     <div :class="{'flex-1': !isChatMaximized, 'flex-none': isChatMaximized}" class="flex flex-col overflow-hidden">
         <!-- Tab Navigation -->
         <div class="bg-[var(--bg-tertiary)] border-b border-[var(--border-primary)] flex">
+            {% if enable_llm_features %}
             <button @click="selectedTab = 'summary'"
                     :class="[
                         'flex-1 px-4 py-3 text-sm font-medium transition-colors',
@@ -36,6 +37,7 @@
                     ]">
                 ${ t('summary.title') }
             </button>
+            {% endif %}
             <button @click="selectedTab = 'notes'"
                     :class="[
                         'flex-1 px-4 py-3 text-sm font-medium transition-colors',
@@ -45,6 +47,7 @@
                     ]">
                 ${ t('notes.title') }
             </button>
+            {% if enable_llm_features %}
             <button v-if="selectedRecording.events && selectedRecording.events.length > 0"
                     @click="selectedTab = 'events'"
                     :class="[
@@ -56,16 +59,23 @@
                 <i class="fas fa-calendar-alt mr-1"></i>
                 ${ t('events.title') } (${ selectedRecording.events.length })
             </button>
+            {% endif %}
         </div>
 
         <!-- Tab Content -->
         <div v-if="!isChatMaximized" class="flex-1 overflow-hidden">
+            {% if enable_llm_features %}
             {% include 'components/detail/desktop-summary-tab.html' %}
+            {% endif %}
             {% include 'components/detail/desktop-notes-tab.html' %}
+            {% if enable_llm_features %}
             {% include 'components/detail/desktop-events-tab.html' %}
+            {% endif %}
         </div>
     </div>
 
     <!-- Chat Section -->
+    {% if enable_llm_features %}
     {% include 'components/detail/desktop-chat-section.html' %}
+    {% endif %}
 </div>

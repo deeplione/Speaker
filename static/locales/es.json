@@ -5,7 +5,7 @@
     "asrEnabled": "ASR Habilitado",
     "asrEndpoint": "Punto de Acceso ASR",
     "audioTranscription": "Transcripción de Audio",
-    "audioTranscriptionDesc": "API de Whisper y soporte ASR personalizado con alta precisión",
+    "audioTranscriptionDesc": "ASR de Whisper y soporte ASR personalizado con alta precisión",
     "backend": "Backend",
     "database": "Base de Datos",
     "deployment": "Despliegue",
@@ -36,13 +36,13 @@
     "technologyStack": "Pila Tecnológica",
     "title": "Acerca de",
     "version": "Versión",
-    "whisperApi": "API de Whisper"
+    "whisperApi": "ASR de Whisper"
   },
   "aboutPageDetails": {
     "aiSummarizationDesc": "Integración con OpenRouter y Ollama con prompts personalizados",
     "asrEnabled": "ASR Habilitado",
     "asrEndpoint": "Punto de Acceso ASR",
-    "audioTranscriptionDesc": "API de Whisper y soporte ASR personalizado con alta precisión",
+    "audioTranscriptionDesc": "ASR de Whisper y soporte ASR personalizado con alta precisión",
     "backend": "Backend",
     "database": "Base de Datos",
     "deployment": "Implementación",
@@ -57,7 +57,7 @@
     "no": "No",
     "sharingExportDesc": "Comparte grabaciones y exporta a varios formatos",
     "speakerDiarizationDesc": "Identifica y etiqueta diferentes oradores automáticamente",
-    "whisperApi": "API de Whisper",
+    "whisperApi": "ASR de Whisper",
     "yes": "Sí"
   },
   "account": {

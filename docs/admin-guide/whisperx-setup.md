@@ -156,7 +156,7 @@ ASR_BASE_URL=http://whisperx-asr-api:9000
 ASR_RETURN_SPEAKER_EMBEDDINGS=true
 ```
 
-> **Important:** The `ASR_RETURN_SPEAKER_EMBEDDINGS=true` setting is required to enable voice profile features. This setting is only supported by WhisperX and should not be enabled when using the basic OpenAI Whisper ASR Webservice.
+> **Important:** The `ASR_RETURN_SPEAKER_EMBEDDINGS=true` setting is required to enable voice profile features. This setting is only supported by WhisperX and should not be enabled when using the basic Whisper ASR webservice.
 
 Restart Speakr:
 
