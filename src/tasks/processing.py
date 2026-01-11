@@ -56,7 +56,8 @@ def _sanitize_asr_base_url(base_url):
     if not hostname:
         return "<invalid>"
 
-    netloc = f"{hostname}:{parsed.port}" if parsed.port else hostname
+    host = f"[{hostname}]" if ":" in hostname and not hostname.startswith("[") else hostname
+    netloc = f"{host}:{parsed.port}" if parsed.port else host
     return f"{scheme}://{netloc}" if scheme else netloc
 
 
