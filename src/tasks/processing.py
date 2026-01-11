@@ -1325,7 +1325,7 @@ def transcribe_audio_asr(app_context, recording_id, filepath, original_filename,
                     asr_base_url_display,
                 )
                 user_error_msg = (
-                    f"ASR processing failed: unable to resolve ASR_BASE_URL ({asr_base_url_display}). "
+                    "ASR processing failed: unable to resolve ASR_BASE_URL. "
                     "Verify ASR_BASE_URL points to a reachable host (use the ASR service name "
                     "when running via Docker Compose)."
                 )
