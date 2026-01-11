@@ -16,6 +16,7 @@ import mimetypes
 import tempfile
 import subprocess
 import httpx
+from urllib.parse import urlsplit, urlunsplit
 from datetime import datetime
 from flask import current_app
 from openai import OpenAI
@@ -34,6 +35,19 @@ from src.file_exporter import export_recording, ENABLE_AUTO_EXPORT
 
 # Configuration for internal sharing
 ENABLE_INTERNAL_SHARING = os.environ.get('ENABLE_INTERNAL_SHARING', 'false').lower() == 'true'
+
+
+def _sanitize_asr_base_url(base_url):
+    if not base_url:
+        return "<unset>"
+    try:
+        parsed = urlsplit(base_url)
+    except ValueError:
+        return base_url
+
+    hostname = parsed.hostname or ""
+    netloc = f"{hostname}:{parsed.port}" if parsed.port else hostname
+    return urlunsplit((parsed.scheme, netloc, parsed.path, "", ""))
 
 
 def apply_team_tag_auto_shares(recording_id):
@@ -1319,7 +1333,7 @@ def transcribe_audio_asr(app_context, recording_id, filepath, original_filename,
                 current_app.logger.error(f"Timeout details - configured ASR timeout: {asr_timeout}s. Error: {error_msg}")
                 user_error_msg = f"ASR processing timed out. Error: {error_msg}"
             elif "name or service not known" in error_msg_lower or "temporary failure in name resolution" in error_msg_lower:
-                asr_base_url_display = ASR_BASE_URL or "<unset>"
+                asr_base_url_display = _sanitize_asr_base_url(ASR_BASE_URL)
                 current_app.logger.error(
                     "ASR endpoint resolution failed for ASR_BASE_URL=%s",
                     asr_base_url_display,
