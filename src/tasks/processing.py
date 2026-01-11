@@ -16,7 +16,7 @@ import mimetypes
 import tempfile
 import subprocess
 import httpx
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urlsplit
 from datetime import datetime
 from flask import current_app
 from openai import OpenAI
@@ -40,14 +40,24 @@ ENABLE_INTERNAL_SHARING = os.environ.get('ENABLE_INTERNAL_SHARING', 'false').low
 def _sanitize_asr_base_url(base_url):
     if not base_url:
         return "<unset>"
+    value = base_url.strip()
     try:
-        parsed = urlsplit(base_url)
+        parsed = urlsplit(value)
     except ValueError:
         return "<invalid>"
 
+    if not parsed.hostname:
+        parsed = urlsplit(f"//{value}")
+        scheme = ""
+    else:
+        scheme = parsed.scheme
+
     hostname = parsed.hostname or ""
+    if not hostname:
+        return "<invalid>"
+
     netloc = f"{hostname}:{parsed.port}" if parsed.port else hostname
-    return urlunsplit((parsed.scheme, netloc, "", "", ""))
+    return f"{scheme}://{netloc}" if scheme else netloc
 
 
 def apply_team_tag_auto_shares(recording_id):
