@@ -36,7 +36,7 @@ Welcome to the Speakr Admin Guide! As an administrator, you control the heart of
   <div class="guide-card">
     <div class="card-icon">🤖</div>
     <h3>Model Configuration</h3>
-    <p>Configure AI models for text generation, including GPT-5 support and provider selection.</p>
+    <p>Configure AI models for text generation and provider selection.</p>
     <a href="model-configuration" class="card-link">Configure Models →</a>
   </div>
 

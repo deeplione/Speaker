@@ -5,7 +5,7 @@
     "asrEnabled": "ASR включён",
     "asrEndpoint": "ASR-эндпоинт",
     "audioTranscription": "Транскрибирование аудио",
-    "audioTranscriptionDesc": "Поддержка Whisper API и пользовательских ASR с высокой точностью",
+    "audioTranscriptionDesc": "Поддержка Whisper ASR и пользовательских ASR с высокой точностью",
     "backend": "Бэкенд",
     "database": "База данных",
     "deployment": "Развёртывание",
@@ -36,13 +36,13 @@
     "technologyStack": "Технологический стек",
     "title": "О продукте",
     "version": "Версия",
-    "whisperApi": "Whisper API"
+    "whisperApi": "Whisper ASR"
   },
   "aboutPageDetails": {
     "aiSummarizationDesc": "Интеграция OpenRouter и Ollama с настраиваемыми запросами",
     "asrEnabled": "ASR включён",
     "asrEndpoint": "ASR-эндпоинт",
-    "audioTranscriptionDesc": "Поддержка Whisper API и пользовательских ASR с высокой точностью",
+    "audioTranscriptionDesc": "Поддержка Whisper ASR и пользовательских ASR с высокой точностью",
     "backend": "Бэкенд",
     "database": "База данных",
     "deployment": "Развёртывание",
@@ -57,7 +57,7 @@
     "no": "Нет",
     "sharingExportDesc": "Делитесь записями и экспортируйте в разные форматы",
     "speakerDiarizationDesc": "Автоматическое определение и маркировка разных спикеров",
-    "whisperApi": "Whisper API",
+    "whisperApi": "Whisper ASR",
     "yes": "Да"
   },
   "account": {

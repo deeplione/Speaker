@@ -19,8 +19,6 @@ __all__ = [
     'basic_text_search_chunks',
     'semantic_search_chunks',
     # LLM services
-    'is_gpt5_model',
-    'is_using_openai_api',
     'call_llm_completion',
     'call_chat_completion',
     'chat_client',

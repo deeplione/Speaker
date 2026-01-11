@@ -446,9 +446,11 @@
                         <a href="#" id="tab-account" class="inline-flex items-center whitespace-nowrap py-1 px-1.5 sm:py-3 sm:px-3 border-b-2 font-medium text-xs sm:text-sm border-[var(--border-accent)] text-[var(--text-accent)] rounded-t-md sm:rounded-t-lg hover:bg-[var(--bg-tertiary)]">
                             <i class="fas fa-user-circle mr-0.5 sm:mr-2 text-xs sm:text-sm"></i><span data-i18n="account.title">Account</span>
                         </a>
+                        {% if enable_llm_features %}
                         <a href="#" id="tab-prompts" class="inline-flex items-center whitespace-nowrap py-1 px-1.5 sm:py-3 sm:px-3 border-b-2 font-medium text-xs sm:text-sm border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-secondary)] rounded-t-md sm:rounded-t-lg hover:bg-[var(--bg-tertiary)]">
                             <i class="fas fa-cog mr-0.5 sm:mr-2 text-xs sm:text-sm"></i><span data-i18n="accountTabs.promptOptions">Prompts</span>
                         </a>
+                        {% endif %}
                         <a href="#" id="tab-shares" class="inline-flex items-center whitespace-nowrap py-1 px-1.5 sm:py-3 sm:px-3 border-b-2 font-medium text-xs sm:text-sm border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-secondary)] rounded-t-md sm:rounded-t-lg hover:bg-[var(--bg-tertiary)]">
                             <i class="fas fa-share-alt mr-0.5 sm:mr-2 text-xs sm:text-sm"></i><span data-i18n="accountTabs.sharedTranscripts">Shares</span>
                         </a>
@@ -528,11 +530,13 @@
                                         <input type="text" name="transcription_language" id="transcription_language" value="{{ current_user.transcription_language or '' }}" placeholder="e.g., en, es, zh (ISO 639-1 code)" class="mt-1 block w-full px-3 py-2 border border-[var(--border-secondary)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--border-focus)] focus:border-[var(--border-focus)] sm:text-sm bg-[var(--bg-input)] text-[var(--text-primary)]">
                                         <p class="text-xs text-[var(--text-light)] mt-1" data-i18n="account.leaveBlankForAutoDetect">Leave blank for auto-detection by transcription service.</p>
                                     </div>
+                                    {% if enable_llm_features %}
                                     <div>
                                         <label for="output_language" class="block text-sm font-medium text-[var(--text-muted)]" data-i18n="account.preferredOutputLanguage">Preferred Output Language</label>
                                         <input type="text" name="output_language" id="output_language" value="{{ current_user.output_language or '' }}" placeholder="e.g., English, Spanish, Chinese" class="mt-1 block w-full px-3 py-2 border border-[var(--border-secondary)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--border-focus)] focus:border-[var(--border-focus)] sm:text-sm bg-[var(--bg-input)] text-[var(--text-primary)]">
                                         <p class="text-xs text-[var(--text-light)] mt-1" data-i18n="account.languageForSummaries">Language for titles, summaries, and chat. Leave blank for default (default behavior of your chosen model).</p>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             
@@ -655,6 +659,7 @@
                 </div>
                 </div>
 
+                    {% if enable_llm_features %}
                     <div id="content-prompts" class="hidden tab-content pt-6">
                     <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-6" data-i18n="accountTabs.promptOptions">Prompt Options</h2>
 
@@ -745,6 +750,7 @@
                         </div>
                     </form>
                 </div>
+                    {% endif %}
 
                     <div id="content-shares" class="hidden tab-content pt-6">
                     <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-6" data-i18n="accountTabs.sharedTranscripts">Shared Transcripts</h2>
@@ -1121,7 +1127,7 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                                         <h4 class="font-medium text-[var(--text-primary)] mb-2" data-i18n="aboutPage.speechRecognition">Speech Recognition</h4>
                                         <div class="space-y-1 text-sm">
                                             <p class="text-[var(--text-secondary)]">
-                                                <span class="font-medium" data-i18n="aboutPage.whisperApi">Whisper API:</span> 
+                                                <span class="font-medium" data-i18n="aboutPage.whisperApi">Whisper ASR:</span> 
                                                 <span id="whisper-endpoint" class="font-mono text-xs text-[var(--text-muted)] ml-1">Loading...</span>
                                             </p>
                                             <p class="text-[var(--text-secondary)]">
@@ -1183,7 +1189,11 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                                 <div class="mt-6 p-3 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-secondary)]">
                                     <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
                                         <i class="fas fa-info-circle text-[var(--text-accent)] mr-2"></i>
+                                        {% if enable_llm_features %}
                                         <span data-i18n="aboutPage.projectDescription">Transform your audio recordings into organized, searchable notes with AI-powered transcription, summarization, and interactive chat features.</span>
+                                        {% else %}
+                                        <span>Transform your audio recordings into organized, searchable notes with transcription and speaker diarization.</span>
+                                        {% endif %}
                                     </p>
                                 </div>
                             </div>
@@ -1205,10 +1215,11 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                                     </div>
                                     <div>
                                         <h4 class="font-medium text-[var(--text-primary)] mb-1" data-i18n="aboutPage.audioTranscription">Audio Transcription</h4>
-                                        <p class="text-sm text-[var(--text-secondary)]" data-i18n="aboutPage.audioTranscriptionDesc">Whisper API and custom ASR support with high accuracy</p>
+                                        <p class="text-sm text-[var(--text-secondary)]" data-i18n="aboutPage.audioTranscriptionDesc">Whisper ASR and custom ASR support with high accuracy</p>
                                     </div>
                                 </div>
                                 
+                                {% if enable_llm_features %}
                                 <div class="flex items-start p-4 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-secondary)] hover:border-[var(--border-accent)] transition-colors">
                                     <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg mr-3 mt-1">
                                         <i class="fas fa-robot text-purple-600 dark:text-purple-400"></i>
@@ -1218,6 +1229,7 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                                         <p class="text-sm text-[var(--text-secondary)]" data-i18n="aboutPage.aiSummarizationDesc">OpenRouter and Ollama integration with custom prompts</p>
                                     </div>
                                 </div>
+                                {% endif %}
                                 
                                 <div class="flex items-start p-4 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-secondary)] hover:border-[var(--border-accent)] transition-colors">
                                     <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg mr-3 mt-1">
@@ -1229,6 +1241,7 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                                     </div>
                                 </div>
                                 
+                                {% if enable_llm_features %}
                                 <div class="flex items-start p-4 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-secondary)] hover:border-[var(--border-accent)] transition-colors">
                                     <div class="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg mr-3 mt-1">
                                         <i class="fas fa-comments text-orange-600 dark:text-orange-400"></i>
@@ -1238,7 +1251,9 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                                         <p class="text-sm text-[var(--text-secondary)]" data-i18n="aboutPage.interactiveChatDesc">Chat with your transcriptions using AI</p>
                                     </div>
                                 </div>
+                                {% endif %}
                                 
+                                {% if enable_llm_features %}
                                 <div class="flex items-start p-4 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-secondary)] hover:border-[var(--border-accent)] transition-colors">
                                     <div class="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg mr-3 mt-1">
                                         <i class="fas fa-search text-indigo-600 dark:text-indigo-400"></i>
@@ -1248,6 +1263,7 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                                         <p class="text-sm text-[var(--text-secondary)]" data-i18n="aboutPage.inquireModeDesc">Semantic search across all your recordings</p>
                                     </div>
                                 </div>
+                                {% endif %}
                                 
                                 <div class="flex items-start p-4 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-secondary)] hover:border-[var(--border-accent)] transition-colors">
                                     <div class="p-2 bg-teal-100 dark:bg-teal-900 rounded-lg mr-3 mt-1">
@@ -2111,9 +2127,10 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                 { tab: tabTokens, content: contentTokens, name: 'tokens' },
                 { tab: tabAbout, content: contentAbout, name: 'about' }
             ];
+            const activeTabs = tabs.filter(({ tab, content }) => tab && content);
 
             function switchToTab(targetName) {
-                tabs.forEach(({ tab, content, name }) => {
+                activeTabs.forEach(({ tab, content, name }) => {
                     if (name === targetName) {
                         // Active tab
                         tab.classList.add('border-[var(--border-accent)]', 'text-[var(--text-accent)]');
@@ -2148,7 +2165,9 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
             }
 
             function showPromptsTab() {
-                switchToTab('prompts');
+                if (tabPrompts) {
+                    switchToTab('prompts');
+                }
             }
 
             function showSharesTab() {
@@ -2175,45 +2194,61 @@ curl "https://your-speakr-instance.com/api/recordings?token=YOUR_TOKEN_HERE"</co
                 switchToTab('about');
             }
 
-            tabAccount.addEventListener('click', (e) => {
-                e.preventDefault();
-                showAccountTab();
-            });
+            if (tabAccount) {
+                tabAccount.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showAccountTab();
+                });
+            }
 
-            tabPrompts.addEventListener('click', (e) => {
-                e.preventDefault();
-                showPromptsTab();
-            });
+            if (tabPrompts) {
+                tabPrompts.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPromptsTab();
+                });
+            }
 
-            tabShares.addEventListener('click', (e) => {
-                e.preventDefault();
-                showSharesTab();
-            });
+            if (tabShares) {
+                tabShares.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSharesTab();
+                });
+            }
 
-            tabSpeakers.addEventListener('click', (e) => {
-                e.preventDefault();
-                showSpeakersTab();
-            });
+            if (tabSpeakers) {
+                tabSpeakers.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSpeakersTab();
+                });
+            }
 
-            tabTags.addEventListener('click', (e) => {
-                e.preventDefault();
-                showTagsTab();
-            });
+            if (tabTags) {
+                tabTags.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showTagsTab();
+                });
+            }
 
-            tabTemplates.addEventListener('click', (e) => {
-                e.preventDefault();
-                showTemplatesTab();
-            });
+            if (tabTemplates) {
+                tabTemplates.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showTemplatesTab();
+                });
+            }
 
-            tabTokens.addEventListener('click', (e) => {
-                e.preventDefault();
-                showTokensTab();
-            });
+            if (tabTokens) {
+                tabTokens.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showTokensTab();
+                });
+            }
 
-            tabAbout.addEventListener('click', (e) => {
-                e.preventDefault();
-                showAboutTab();
-            });
+            if (tabAbout) {
+                tabAbout.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showAboutTab();
+                });
+            }
 
             // Load speakers for the Speakers Management tab
             let speakersTabData = [];

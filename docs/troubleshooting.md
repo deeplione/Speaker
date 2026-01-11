@@ -32,13 +32,13 @@ When recordings stay in "pending" or "queued" status indefinitely, check these c
 
 **Background processor stopped**: Check the logs for error messages about the [transcription service](features.md#multi-engine-support). Monitor processing status in the [vector store](admin-guide/vector-store.md) admin panel.
 
-**API key issues**: The most common cause - verify your OpenAI or OpenRouter API key is valid and has available credits.
+**API key issues**: The most common cause - verify your API key is valid and has available credits.
 
 **Network connectivity**: The container needs to reach external API endpoints. If you're behind a corporate proxy, you'll need to configure proxy settings in your Docker environment.
 
 ### Transcription Fails Immediately
 
-Quick failures usually indicate API authentication problems. Double-check your API keys in the environment file. Remember that OpenAI and OpenRouter use different key formats. OpenAI keys start with "sk-" while OpenRouter keys look different. Ensure you're using the right key for your configured service.
+Quick failures usually indicate API authentication problems. Double-check your API keys in the environment file and ensure you're using the right key for your configured service.
 
 API rate limits or insufficient credits also cause immediate failures. Log into your API provider's dashboard to check your usage and limits. Some API plans have restrictive rate limits that Speakr might exceed with large files.
 
@@ -112,9 +112,9 @@ If you're on v0.6.1 or earlier and see this behavior, upgrade to v0.6.2. The fix
 - Any associated backend jobs are cleaned up
 - No ghost entries remain clickable
 
-### Files Over 25MB Fail with OpenAI
+### Files Over Service Limits
 
-OpenAI's Whisper API has a 25MB file size limit. For larger files, enable [chunking](features.md#audio-chunking) in your environment configuration. Learn about [chunking strategies](faq.md#whats-the-difference-between-chunking-by-size-vs-duration):
+Some transcription services impose file size or duration limits. For larger files, enable [chunking](features.md#audio-chunking) in your environment configuration. Learn about [chunking strategies](faq.md#whats-the-difference-between-chunking-by-size-vs-duration):
 ```
 ENABLE_CHUNKING=true
 CHUNK_LIMIT=20MB  # or use duration: CHUNK_LIMIT=1400s
@@ -137,7 +137,7 @@ Clear your browser cache if the interface gradually becomes slower over time. Sp
 
 ### Speaker Identification Not Working
 
-[Speaker diarization](features.md#speaker-diarization) requires the [ASR endpoint](getting-started.md#option-b-custom-asr-endpoint-configuration), not standard Whisper API. Configure speaker settings in [system settings](admin-guide/system-settings.md). Verify you've configured ASR settings correctly in your environment file. The ASR_BASE_URL should point to a valid ASR service that supports diarization.
+[Speaker diarization](features.md#speaker-diarization) requires the [ASR endpoint](getting-started.md#option-b-custom-asr-endpoint-configuration). Configure speaker settings in [system settings](admin-guide/system-settings.md). Verify you've configured ASR settings correctly in your environment file. The ASR_BASE_URL should point to a valid ASR service that supports diarization.
 
 Even with ASR enabled, you must explicitly request diarization when uploading or reprocessing recordings. Speakr should do this by default, but user settings may override this behavior. Check the speaker count settings - if you set min and max speakers to 1, diarization effectively disables. Use reasonable ranges like 2-6 speakers for most recordings.
 

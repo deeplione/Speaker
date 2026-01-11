@@ -195,11 +195,13 @@
                                         class="inline-flex items-center whitespace-nowrap py-1 px-1.5 sm:py-3 sm:px-3 border-b-2 font-medium text-xs sm:text-sm rounded-t-md sm:rounded-t-lg hover:bg-[var(--bg-tertiary)]">
                                     <i class="fas fa-cogs mr-0.5 sm:mr-2 text-xs sm:text-sm"></i><span>${t('adminDashboard.systemSettings')}</span>
                                 </button>
+                                {% if enable_llm_features %}
                                 <button v-if="!isTeamAdminOnly" @click="activeTab = 'prompts'"
                                         :class="activeTab === 'prompts' ? 'border-[var(--border-accent)] text-[var(--text-accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-secondary)]'"
                                         class="inline-flex items-center whitespace-nowrap py-1 px-1.5 sm:py-3 sm:px-3 border-b-2 font-medium text-xs sm:text-sm rounded-t-md sm:rounded-t-lg hover:bg-[var(--bg-tertiary)]">
                                     <i class="fas fa-file-alt mr-0.5 sm:mr-2 text-xs sm:text-sm"></i><span>${t('adminDashboard.defaultPrompts')}</span>
                                 </button>
+                                {% endif %}
                                 <button @click="activeTab = 'groups'"
                                         :class="activeTab === 'groups' ? 'border-[var(--border-accent)] text-[var(--text-accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-secondary)]'"
                                         class="inline-flex items-center whitespace-nowrap py-1 px-1.5 sm:py-3 sm:px-3 border-b-2 font-medium text-xs sm:text-sm rounded-t-md sm:rounded-t-lg hover:bg-[var(--bg-tertiary)]">
@@ -466,6 +468,7 @@
                     </div>
                 </div>
                 
+                {% if enable_llm_features %}
                 <!-- Default Prompts Tab -->
                 <div v-show="activeTab === 'prompts'">
                     <div class="mb-6">
@@ -598,6 +601,7 @@ Summarization Instructions:
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 
                 <!-- Vector Store Tab -->
                 <div v-show="activeTab === 'vectorstore'" v-if="inquireModeEnabled">

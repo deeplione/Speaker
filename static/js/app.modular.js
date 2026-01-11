@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dragover = ref(false);
             const recordings = ref([]);
             const selectedRecording = ref(null);
-            const selectedTab = ref('summary');
+            const selectedTab = ref('notes');
             const searchQuery = ref('');
             const isLoadingRecordings = ref(true);
             const globalError = ref(null);
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const speakerMap = ref({});
             const modalSpeakers = ref([]);
             const speakerDisplayMap = ref({});
-            const regenerateSummaryAfterSpeakerUpdate = ref(true);
+            const regenerateSummaryAfterSpeakerUpdate = ref(false);
             const speakerSuggestions = ref({});
             const loadingSuggestions = ref({});
             const activeSpeakerInput = ref(null);
@@ -350,6 +350,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // --- App Configuration ---
             const useAsrEndpoint = ref(false);
+            const enableLlmFeatures = ref(false);
             const currentUserName = ref('');
             const canDeleteRecordings = ref(true);
             const enableInternalSharing = ref(false);
@@ -500,7 +501,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 dropdownPositions,
 
                 // App Config
-                useAsrEndpoint, currentUserName, canDeleteRecordings, enableInternalSharing, enableArchiveToggle, showUsernamesInUI,
+                useAsrEndpoint, enableLlmFeatures, currentUserName, canDeleteRecordings, enableInternalSharing, enableArchiveToggle, showUsernamesInUI,
 
                 // Internal Sharing
                 showUnifiedShareModal, internalShareUserSearch, internalShareSearchResults,
@@ -1734,7 +1735,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const appElement = document.getElementById('app');
                 if (appElement) {
                     useAsrEndpoint.value = appElement.dataset.useAsrEndpoint === 'True';
+                    enableLlmFeatures.value = appElement.dataset.enableLlmFeatures === 'True';
                     currentUserName.value = appElement.dataset.currentUserName || '';
+
+                    if (enableLlmFeatures.value) {
+                        selectedTab.value = 'summary';
+                        regenerateSummaryAfterSpeakerUpdate.value = true;
+                    }
                 }
 
                 // Initialize UI

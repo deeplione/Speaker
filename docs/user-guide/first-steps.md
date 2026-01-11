@@ -39,7 +39,7 @@ The center panel is where you'll read and interact with your transcription. This
 ![Transcription with Speakers](../assets/images/screenshots/main-view-with-speakers.png)
 ![Summary View](../assets/images/screenshots/main-view-summary-tab.png)
 
-The transcription display varies depending on how your audio was processed. If you used a standard Whisper API endpoint, you'll see a simple continuous text transcription without speaker identification. The text flows as a single narrative, which works well for single-speaker recordings or when speaker identification isn't needed.
+The transcription display varies depending on how your audio was processed. If you used a basic ASR endpoint without speaker diarization, you'll see a simple continuous text transcription without speaker identification. The text flows as a single narrative, which works well for single-speaker recordings or when speaker identification isn't needed.
 
 If you've used an ASR endpoint with speaker diarization enabled, each speaker's contributions are clearly labeled with colored tags like "SPEAKER_01", "SPEAKER_02", etc. These labels are color-coded to help you follow multi-person conversations visually. While timestamps aren't displayed in the text, clicking on any sentence will automatically move the audio player to that exact position, making it easy to navigate through the recording.
 

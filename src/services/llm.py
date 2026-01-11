@@ -19,7 +19,7 @@ TEXT_MODEL_API_KEY = os.environ.get("TEXT_MODEL_API_KEY")
 TEXT_MODEL_BASE_URL = os.environ.get("TEXT_MODEL_BASE_URL", "https://openrouter.ai/api/v1")
 if TEXT_MODEL_BASE_URL:
     TEXT_MODEL_BASE_URL = TEXT_MODEL_BASE_URL.split('#')[0].strip()
-TEXT_MODEL_NAME = os.environ.get("TEXT_MODEL_NAME", "openai/gpt-3.5-turbo")
+TEXT_MODEL_NAME = os.environ.get("TEXT_MODEL_NAME", "meta-llama/llama-3.1-8b-instruct")
 
 # Chat model configuration (optional - falls back to TEXT_MODEL_* if not set)
 CHAT_MODEL_API_KEY = os.environ.get("CHAT_MODEL_API_KEY")
@@ -28,31 +28,23 @@ if CHAT_MODEL_BASE_URL:
     CHAT_MODEL_BASE_URL = CHAT_MODEL_BASE_URL.split('#')[0].strip()
 CHAT_MODEL_NAME = os.environ.get("CHAT_MODEL_NAME")
 
-# Chat-specific GPT-5 settings (optional - falls back to main GPT5_* settings)
-CHAT_GPT5_REASONING_EFFORT = os.environ.get("CHAT_GPT5_REASONING_EFFORT")
-CHAT_GPT5_VERBOSITY = os.environ.get("CHAT_GPT5_VERBOSITY")
-
 
 def get_chat_config():
     """
     Get chat model configuration, falling back to TEXT_MODEL if not set.
 
-    Returns a dict with api_key, base_url, model_name, and GPT-5 settings.
+    Returns a dict with api_key, base_url, model_name.
     """
     if CHAT_MODEL_API_KEY and CHAT_MODEL_NAME:
         return {
             'api_key': CHAT_MODEL_API_KEY,
             'base_url': CHAT_MODEL_BASE_URL or TEXT_MODEL_BASE_URL,
-            'model_name': CHAT_MODEL_NAME,
-            'gpt5_reasoning_effort': CHAT_GPT5_REASONING_EFFORT or os.environ.get("GPT5_REASONING_EFFORT", "medium"),
-            'gpt5_verbosity': CHAT_GPT5_VERBOSITY or os.environ.get("GPT5_VERBOSITY", "medium")
+            'model_name': CHAT_MODEL_NAME
         }
     return {
         'api_key': TEXT_MODEL_API_KEY,
         'base_url': TEXT_MODEL_BASE_URL,
-        'model_name': TEXT_MODEL_NAME,
-        'gpt5_reasoning_effort': os.environ.get("GPT5_REASONING_EFFORT", "medium"),
-        'gpt5_verbosity': os.environ.get("GPT5_VERBOSITY", "medium")
+        'model_name': TEXT_MODEL_NAME
     }
 
 
@@ -100,41 +92,13 @@ except Exception as chat_client_init_e:
     chat_client = client
 
 
-def is_gpt5_model(model_name):
-    """
-    Check if the model is a GPT-5 series model that requires special API parameters.
-
-    Args:
-        model_name: The model name string
-
-    Returns:
-        Boolean indicating if this is a GPT-5 model
-    """
-    if not model_name:
-        return False
-    model_lower = model_name.lower()
-    return model_lower.startswith('gpt-5') or model_lower in ['gpt-5', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-chat-latest']
-
-
-
-def is_using_openai_api():
-    """
-    Check if we're using the official OpenAI API (not OpenRouter or other providers).
-
-    Returns:
-        Boolean indicating if this is the OpenAI API
-    """
-    return TEXT_MODEL_BASE_URL and 'api.openai.com' in TEXT_MODEL_BASE_URL
-
-
-
 def call_llm_completion(messages, temperature=0.7, response_format=None, stream=False, max_tokens=None):
     """
     Centralized function for LLM API calls with proper error handling and logging.
 
     Args:
         messages: List of message dicts with 'role' and 'content'
-        temperature: Sampling temperature (0-1) - ignored for GPT-5 models
+        temperature: Sampling temperature (0-1)
         response_format: Optional response format dict (e.g., {"type": "json_object"})
         stream: Whether to stream the response
         max_tokens: Optional maximum tokens to generate
@@ -149,37 +113,16 @@ def call_llm_completion(messages, temperature=0.7, response_format=None, stream=
         raise ValueError("TEXT_MODEL_API_KEY not configured")
 
     try:
-        # Check if we're using GPT-5 with OpenAI API
-        using_gpt5 = is_gpt5_model(TEXT_MODEL_NAME) and is_using_openai_api()
-
         completion_args = {
             "model": TEXT_MODEL_NAME,
             "messages": messages,
             "stream": stream
         }
 
-        if using_gpt5:
-            # GPT-5 models don't support temperature, top_p, or logprobs
-            # They use reasoning_effort and verbosity instead
-            logger.debug(f"Using GPT-5 model: {TEXT_MODEL_NAME} - applying GPT-5 specific parameters")
+        completion_args["temperature"] = temperature
 
-            # Get GPT-5 specific parameters from environment variables
-            reasoning_effort = os.environ.get("GPT5_REASONING_EFFORT", "medium")  # minimal, low, medium, high
-            verbosity = os.environ.get("GPT5_VERBOSITY", "medium")  # low, medium, high
-
-            # Add GPT-5 specific parameters
-            completion_args["reasoning_effort"] = reasoning_effort
-            completion_args["verbosity"] = verbosity
-
-            # Use max_completion_tokens instead of max_tokens for GPT-5
-            if max_tokens:
-                completion_args["max_completion_tokens"] = max_tokens
-        else:
-            # Non-GPT-5 models use standard parameters
-            completion_args["temperature"] = temperature
-
-            if max_tokens:
-                completion_args["max_tokens"] = max_tokens
+        if max_tokens:
+            completion_args["max_tokens"] = max_tokens
 
         if response_format:
             completion_args["response_format"] = response_format
@@ -211,7 +154,7 @@ def call_chat_completion(messages, temperature=0.7, response_format=None, stream
 
     Args:
         messages: List of message dicts with 'role' and 'content'
-        temperature: Sampling temperature (0-1) - ignored for GPT-5 models
+        temperature: Sampling temperature (0-1)
         response_format: Optional response format dict (e.g., {"type": "json_object"})
         stream: Whether to stream the response
         max_tokens: Optional maximum tokens to generate
@@ -230,10 +173,6 @@ def call_chat_completion(messages, temperature=0.7, response_format=None, stream
 
     try:
         model_name = chat_config['model_name']
-        base_url = chat_config['base_url'] or ''
-
-        # Check if we're using GPT-5 with OpenAI API
-        using_gpt5 = is_gpt5_model(model_name) and 'api.openai.com' in base_url
 
         completion_args = {
             "model": model_name,
@@ -241,18 +180,9 @@ def call_chat_completion(messages, temperature=0.7, response_format=None, stream
             "stream": stream
         }
 
-        if using_gpt5:
-            logger.debug(f"Using GPT-5 chat model: {model_name}")
-            # Use chat-specific GPT-5 settings from config
-            completion_args["reasoning_effort"] = chat_config['gpt5_reasoning_effort']
-            completion_args["verbosity"] = chat_config['gpt5_verbosity']
-
-            if max_tokens:
-                completion_args["max_completion_tokens"] = max_tokens
-        else:
-            completion_args["temperature"] = temperature
-            if max_tokens:
-                completion_args["max_tokens"] = max_tokens
+        completion_args["temperature"] = temperature
+        if max_tokens:
+            completion_args["max_tokens"] = max_tokens
 
         if response_format:
             completion_args["response_format"] = response_format
@@ -363,6 +293,4 @@ def process_streaming_with_thinking(stream):
 
     # Signal the end of the stream
     yield f"data: {json.dumps({'end_of_stream': True})}\n\n"
-
-
 

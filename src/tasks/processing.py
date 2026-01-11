@@ -2,7 +2,7 @@
 Background task functions for audio processing, transcription, and summarization.
 
 These functions handle asynchronous processing tasks:
-- Audio transcription (Whisper API and custom ASR endpoints)
+- Audio transcription (Whisper ASR and custom ASR endpoints)
 - Title and summary generation
 - Event extraction from transcripts
 - Audio/video format conversion
@@ -23,11 +23,11 @@ from openai import OpenAI
 from src.database import db
 from src.models import Recording, Tag, Event, TranscriptChunk, SystemSetting, GroupMembership, RecordingTag, InternalShare, SharedRecordingState, User
 from src.services.embeddings import process_recording_chunks
-from src.services.llm import is_using_openai_api, call_llm_completion, format_api_error_message, TEXT_MODEL_NAME, client, http_client_no_proxy
+from src.services.llm import call_llm_completion, format_api_error_message, TEXT_MODEL_NAME, client, http_client_no_proxy
 from src.utils import extract_json_object, safe_json_loads
 from src.utils.ffprobe import get_codec_info, is_video_file, is_lossless_audio, FFProbeError
 from src.utils.ffmpeg_utils import convert_to_mp3, extract_audio_from_video as ffmpeg_extract_audio, compress_audio, FFmpegError, FFmpegNotFoundError
-from src.config.app_config import AUDIO_COMPRESS_UPLOADS, AUDIO_CODEC, AUDIO_BITRATE
+from src.config.app_config import AUDIO_COMPRESS_UPLOADS, AUDIO_CODEC, AUDIO_BITRATE, ENABLE_LLM_FEATURES
 from src.audio_chunking import AudioChunkingService, ChunkProcessingError, ChunkingNotSupportedError
 from src.config.app_config import ASR_DIARIZE, ASR_BASE_URL, ASR_RETURN_SPEAKER_EMBEDDINGS, transcription_api_key, transcription_base_url, chunking_service, ENABLE_CHUNKING
 from src.file_exporter import export_recording, ENABLE_AUTO_EXPORT
@@ -195,6 +195,9 @@ def generate_title_task(app_context, recording_id, will_auto_summarize=False):
         recording_id: ID of the recording
         will_auto_summarize: If True, don't set status to COMPLETED (summary task will do it)
     """
+    if not ENABLE_LLM_FEATURES:
+        current_app.logger.info(f"LLM features disabled; skipping title generation for recording {recording_id}.")
+        return
     with app_context:
         recording = db.session.get(Recording, recording_id)
         if not recording:
@@ -320,6 +323,9 @@ def generate_summary_only_task(app_context, recording_id, custom_prompt_override
         custom_prompt_override: Optional custom prompt that overrides all other prompts (for reprocessing)
         user_id: Optional user ID to filter tag visibility (defaults to recording owner)
     """
+    if not ENABLE_LLM_FEATURES:
+        current_app.logger.info(f"LLM features disabled; skipping summary generation for recording {recording_id}.")
+        return
     with app_context:
         recording = db.session.get(Recording, recording_id)
         if not recording:
@@ -564,6 +570,9 @@ def extract_events_from_transcript(recording_id, transcript_text, summary_text):
         transcript_text: The formatted transcript text
         summary_text: The generated summary text
     """
+    if not ENABLE_LLM_FEATURES:
+        current_app.logger.info(f"LLM features disabled; skipping event extraction for recording {recording_id}.")
+        return
     try:
         recording = db.session.get(Recording, recording_id)
         if not recording or not recording.owner or not recording.owner.extract_events:
@@ -1304,10 +1313,17 @@ def transcribe_audio_asr(app_context, recording_id, filepath, original_filename,
             error_type = type(e).__name__
             current_app.logger.error(f"ASR processing FAILED for recording {recording_id}: [{error_type}] {error_msg}")
 
-            if "timed out" in error_msg.lower() or "timeout" in error_msg.lower() or "Timeout" in error_type:
+            error_msg_lower = error_msg.lower()
+            if "timed out" in error_msg_lower or "timeout" in error_msg_lower or "Timeout" in error_type:
                 asr_timeout = SystemSetting.get_setting('asr_timeout_seconds', 1800)
                 current_app.logger.error(f"Timeout details - configured ASR timeout: {asr_timeout}s. Error: {error_msg}")
                 user_error_msg = f"ASR processing timed out. Error: {error_msg}"
+            elif "name or service not known" in error_msg_lower or "temporary failure in name resolution" in error_msg_lower:
+                user_error_msg = (
+                    "ASR processing failed: unable to resolve ASR_BASE_URL. "
+                    "Verify ASR_BASE_URL points to a reachable host (use the ASR service name "
+                    "when running via Docker Compose)."
+                )
             else:
                 user_error_msg = f"ASR processing failed: {error_msg}"
 
@@ -1404,15 +1420,8 @@ def transcribe_audio_task(app_context, recording_id, filepath, filename_for_asr,
             db.session.commit()
             current_app.logger.info(f"Transcription completed for recording {recording_id} in {recording.transcription_duration_seconds}s. Text length: {len(recording.transcription)}")
 
-            # Check if auto-summarization is disabled
-            disable_auto_summarization = SystemSetting.get_setting('disable_auto_summarization', False)
-            will_auto_summarize = not disable_auto_summarization
-
-            # Generate title immediately (pass flag so it knows whether to set COMPLETED)
-            generate_title_task(app_context, recording_id, will_auto_summarize=will_auto_summarize)
-
-            if disable_auto_summarization:
-                current_app.logger.info(f"Auto-summarization disabled, skipping summary for recording {recording_id}")
+            if not ENABLE_LLM_FEATURES:
+                current_app.logger.info(f"LLM features disabled; skipping title/summary for recording {recording_id}")
                 recording.status = 'COMPLETED'
                 recording.completed_at = datetime.utcnow()
                 db.session.commit()
@@ -1424,9 +1433,29 @@ def transcribe_audio_task(app_context, recording_id, filepath, filename_for_asr,
                 if ENABLE_AUTO_EXPORT:
                     export_recording(recording_id)
             else:
-                # Auto-generate summary for all recordings
-                current_app.logger.info(f"Auto-generating summary for recording {recording_id}")
-                generate_summary_only_task(app_context, recording_id)
+                # Check if auto-summarization is disabled
+                disable_auto_summarization = SystemSetting.get_setting('disable_auto_summarization', False)
+                will_auto_summarize = not disable_auto_summarization
+
+                # Generate title immediately (pass flag so it knows whether to set COMPLETED)
+                generate_title_task(app_context, recording_id, will_auto_summarize=will_auto_summarize)
+
+                if disable_auto_summarization:
+                    current_app.logger.info(f"Auto-summarization disabled, skipping summary for recording {recording_id}")
+                    recording.status = 'COMPLETED'
+                    recording.completed_at = datetime.utcnow()
+                    db.session.commit()
+
+                    # Apply auto-shares for group tags after processing completes
+                    apply_team_tag_auto_shares(recording_id)
+
+                    # Export transcription-only if auto-export is enabled
+                    if ENABLE_AUTO_EXPORT:
+                        export_recording(recording_id)
+                else:
+                    # Auto-generate summary for all recordings
+                    current_app.logger.info(f"Auto-generating summary for recording {recording_id}")
+                    generate_summary_only_task(app_context, recording_id)
 
         except Exception as e:
             db.session.rollback() # Rollback if any step failed critically
@@ -1450,7 +1479,7 @@ def transcribe_audio_task(app_context, recording_id, filepath, filename_for_asr,
 
 
 def transcribe_single_file(filepath, recording):
-    """Transcribe a single audio file using OpenAI Whisper API."""
+    """Transcribe a single audio file using an OpenAI-compatible transcription API."""
 
     # Check if we need to extract audio from video container
     actual_filepath = filepath
@@ -1491,7 +1520,7 @@ def transcribe_single_file(filepath, recording):
                 db.session.commit()
             raise Exception(f"Audio extraction failed: {str(e)}")
 
-    # List of formats supported by Whisper API
+    # List of formats supported by OpenAI-compatible transcription APIs
     WHISPER_SUPPORTED_FORMATS = ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']
 
     # Get user transcription language preference
@@ -1593,7 +1622,7 @@ def transcribe_with_chunking(app_context, recording_id, filepath, filename_for_a
             if not chunks:
                 raise ChunkProcessingError("No chunks were created from the audio file")
 
-            current_app.logger.info(f"Created {len(chunks)} chunks, processing each with Whisper API...")
+            current_app.logger.info(f"Created {len(chunks)} chunks, processing each with transcription API...")
 
             # Process each chunk with proper timeout and retry handling
             chunk_results = []

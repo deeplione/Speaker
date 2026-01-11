@@ -15,9 +15,6 @@ services:
     #
     # 2. Choose your transcription method and copy the corresponding .env file:
     #
-    #    For standard Whisper API (no speaker diarization):
-    #    cp config/env.whisper.example .env
-    #
     #    For WhisperX ASR with voice profiles (recommended for speaker features):
     #    cp config/env.whisperx.example .env
     #

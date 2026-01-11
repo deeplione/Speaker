@@ -9,10 +9,14 @@
         <!-- Mobile Tab Content -->
         <div class="flex-1 overflow-y-auto p-4">
             {% include 'components/detail/mobile-transcript-panel.html' %}
+            {% if enable_llm_features %}
             {% include 'components/detail/mobile-summary-panel.html' %}
+            {% endif %}
             {% include 'components/detail/mobile-notes-panel.html' %}
+            {% if enable_llm_features %}
             {% include 'components/detail/mobile-chat-panel.html' %}
             {% include 'components/detail/mobile-events-panel.html' %}
+            {% endif %}
         </div>
     </div>
 

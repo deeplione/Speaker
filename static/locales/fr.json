@@ -5,7 +5,7 @@
     "asrEnabled": "ASR Activé",
     "asrEndpoint": "Point de Terminaison ASR",
     "audioTranscription": "Transcription Audio",
-    "audioTranscriptionDesc": "API Whisper et support ASR personnalisé avec haute précision",
+    "audioTranscriptionDesc": "ASR Whisper et support ASR personnalisé avec haute précision",
     "backend": "Backend",
     "database": "Base de Données",
     "deployment": "Déploiement",
@@ -36,13 +36,13 @@
     "technologyStack": "Pile Technologique",
     "title": "À Propos",
     "version": "Version",
-    "whisperApi": "API Whisper"
+    "whisperApi": "ASR Whisper"
   },
   "aboutPageDetails": {
     "aiSummarizationDesc": "Intégration OpenRouter et Ollama avec invites personnalisées",
     "asrEnabled": "ASR Activé",
     "asrEndpoint": "Point de Terminaison ASR",
-    "audioTranscriptionDesc": "API Whisper et support ASR personnalisé avec haute précision",
+    "audioTranscriptionDesc": "ASR Whisper et support ASR personnalisé avec haute précision",
     "backend": "Backend",
     "database": "Base de Données",
     "deployment": "Déploiement",
@@ -57,7 +57,7 @@
     "no": "Non",
     "sharingExportDesc": "Partagez des enregistrements et exportez vers divers formats",
     "speakerDiarizationDesc": "Identifier et étiqueter automatiquement les différents intervenants",
-    "whisperApi": "API Whisper",
+    "whisperApi": "ASR Whisper",
     "yes": "Oui"
   },
   "account": {

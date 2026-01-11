@@ -15,7 +15,9 @@ TEXT_MODEL_API_KEY = os.environ.get("TEXT_MODEL_API_KEY")
 TEXT_MODEL_BASE_URL = os.environ.get("TEXT_MODEL_BASE_URL", "https://openrouter.ai/api/v1")
 if TEXT_MODEL_BASE_URL:
     TEXT_MODEL_BASE_URL = TEXT_MODEL_BASE_URL.split('#')[0].strip()
-TEXT_MODEL_NAME = os.environ.get("TEXT_MODEL_NAME", "openai/gpt-3.5-turbo")
+TEXT_MODEL_NAME = os.environ.get("TEXT_MODEL_NAME", "meta-llama/llama-3.1-8b-instruct")
+
+ENABLE_LLM_FEATURES = os.environ.get('ENABLE_LLM_FEATURES', 'false').lower() == 'true'
 
 transcription_api_key = os.environ.get("TRANSCRIPTION_API_KEY", "")
 transcription_base_url = os.environ.get("TRANSCRIPTION_BASE_URL", "")
@@ -80,6 +82,7 @@ def initialize_config(app):
     version = get_version()
 
     app.logger.info(f"=== Speakr {version} Starting Up ===")
+    app.logger.info(f"LLM features enabled: {ENABLE_LLM_FEATURES}")
 
     if USE_ASR_ENDPOINT:
         if not ASR_BASE_URL:
@@ -90,6 +93,6 @@ def initialize_config(app):
         if not transcription_base_url or not transcription_api_key:
             app.logger.error("ERROR: No transcription service configured!")
             sys.exit(1)
-        app.logger.info(f"Using Whisper API: {transcription_base_url}")
+        app.logger.info(f"Using transcription endpoint: {transcription_base_url}")
 
     return client, chunking_service, version

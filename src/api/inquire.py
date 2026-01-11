@@ -9,7 +9,7 @@ import json
 import re
 import time
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, Response, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, Response, current_app, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
@@ -18,12 +18,13 @@ from src.models import *
 from src.utils import *
 from src.services.embeddings import get_accessible_recording_ids, semantic_search_chunks
 from src.services.llm import call_llm_completion, call_chat_completion, process_streaming_with_thinking, client, chat_client
+from src.config.app_config import ENABLE_LLM_FEATURES
 
 # Create blueprint
 inquire_bp = Blueprint('inquire', __name__)
 
 # Configuration from environment
-ENABLE_INQUIRE_MODE = os.environ.get('ENABLE_INQUIRE_MODE', 'false').lower() == 'true'
+ENABLE_INQUIRE_MODE = os.environ.get('ENABLE_INQUIRE_MODE', 'false').lower() == 'true' and ENABLE_LLM_FEATURES
 ENABLE_AUTO_DELETION = os.environ.get('ENABLE_AUTO_DELETION', 'false').lower() == 'true'
 USERS_CAN_DELETE = os.environ.get('USERS_CAN_DELETE', 'true').lower() == 'true'
 ENABLE_INTERNAL_SHARING = os.environ.get('ENABLE_INTERNAL_SHARING', 'false').lower() == 'true'
@@ -49,6 +50,8 @@ def init_inquire_helpers(**kwargs):
 @inquire_bp.route('/inquire')
 @login_required
 def inquire():
+    if not ENABLE_LLM_FEATURES:
+        abort(404)
     # Check if inquire mode is enabled
     if not ENABLE_INQUIRE_MODE:
         flash('Inquire mode is not enabled on this server.', 'warning')
@@ -168,6 +171,8 @@ def inquire_search():
 @login_required
 def inquire_chat():
     """Chat with filtered transcriptions using RAG."""
+    if not ENABLE_LLM_FEATURES:
+        return jsonify({'error': 'LLM features are disabled'}), 404
     if not ENABLE_INQUIRE_MODE:
         return jsonify({'error': 'Inquire mode is not enabled'}), 403
     try:
@@ -836,6 +841,4 @@ def get_available_filters():
     except Exception as e:
         current_app.logger.error(f"Error getting available filters: {e}")
         return jsonify({'error': str(e)}), 500
-
-
 

@@ -28,7 +28,7 @@ Speakr runs comfortably on modest hardware. You need at least 2GB of RAM, though
 
 ### Do I need to know Docker to install Speakr?
 
-Basic Docker knowledge helps but isn't essential. The [quick start guide](getting-started.md) provides exact commands to copy and run. For production deployments, see the [installation guide](getting-started/installation.md). You'll need to install Docker and Docker Compose on your server, create a configuration file with your API keys, then run a single command to start everything. The hardest part is usually getting your API keys from OpenAI or OpenRouter.
+Basic Docker knowledge helps but isn't essential. The [quick start guide](getting-started.md) provides exact commands to copy and run. For production deployments, see the [installation guide](getting-started/installation.md). You'll need to install Docker and Docker Compose on your server, create a configuration file with your API keys, then run a single command to start everything. The hardest part is usually getting your API keys from your chosen provider.
 
 ### Can I run Speakr on a Raspberry Pi?
 
@@ -54,7 +54,7 @@ docker run -d -p 9000:9000 \
   onerahmet/openai-whisper-asr-webservice:latest
 ```
 
-Note: If you don't need speaker identification in your transcriptions, you can use Speakr with the standard Whisper API instead, which doesn't require this additional container.
+Note: If you don't need speaker identification in your transcriptions, you can run a lighter ASR container without speaker embedding support.
 
 ### Can Speakr run offline?
 
@@ -84,9 +84,9 @@ Regular automated backups are highly recommended for production use.
 
 Transcription accuracy depends on several factors - audio quality, speaker clarity, background noise, and technical vocabulary. See the [troubleshooting guide](troubleshooting.md#poor-transcription-quality) for tips. Configure [custom prompts](admin-guide/prompts.md) for technical vocabulary. With good audio, expect 90-95% accuracy for clear English speech. Accuracy decreases with heavy accents, multiple overlapping speakers, or poor recording quality. The ASR endpoint with speaker diarization often provides better practical usability even if raw accuracy is similar.
 
-### What's the difference between Whisper API and ASR endpoints?
+### What's the difference between basic ASR and WhisperX?
 
-Whisper API provides basic transcription - converting speech to text without speaker identification. The [recommended ASR container](getting-started.md#option-b-custom-asr-endpoint-configuration) (`onerahmet/openai-whisper-asr-webservice`) offers advanced features like [speaker diarization](features.md#speaker-diarization), which identifies and labels different speakers in the conversation. Learn to [manage speakers](user-guide/transcripts.md#speaker-identification) after transcription. Diarization is essential for meetings with multiple participants, while Whisper API works fine for single-speaker recordings like dictations or podcasts.
+Basic ASR containers provide transcription output without speaker embeddings, while WhisperX adds advanced features like [speaker diarization](features.md#speaker-diarization) and voice profile matching. The [recommended ASR container](getting-started.md#option-b-custom-asr-endpoint-configuration) (`onerahmet/openai-whisper-asr-webservice`) offers diarization, while WhisperX adds voice profiles for persistent speaker identification. Learn to [manage speakers](user-guide/transcripts.md#speaker-identification) after transcription. Diarization is essential for meetings with multiple participants, while basic ASR is often sufficient for single-speaker recordings like dictations or podcasts.
 
 **Note on ASR engines**: For speaker diarization to work properly with the ASR webservice, you must use `ASR_ENGINE=whisperx`, not `faster_whisper`. While faster_whisper provides transcription, it doesn't support speaker identification.
 
@@ -102,7 +102,7 @@ There's no hard limit on recording length, but practical considerations apply. V
 
 ### What AI model generates the summaries?
 
-Summary generation uses the language model configured in your [environment file](getting-started.md#step-3-configure-your-transcription-service). Customize summaries with [AI prompts](admin-guide/prompts.md) - through a local LLM endpoint or a Cloud provider like OpenAI or OpenRouter. The model choice affects [summary quality](features.md#automatic-summarization), cost, and processing speed. Monitor performance in [system statistics](admin-guide/statistics.md).
+Summary generation uses the language model configured in your [environment file](getting-started.md#step-3-configure-your-transcription-service). Customize summaries with [AI prompts](admin-guide/prompts.md) - through a local LLM endpoint or a cloud provider like OpenRouter. The model choice affects [summary quality](features.md#automatic-summarization), cost, and processing speed. Monitor performance in [system statistics](admin-guide/statistics.md).
 
 ### Can I use different models for chat and summaries?
 
@@ -118,11 +118,11 @@ Configure this using the optional `CHAT_MODEL_*` environment variables. See the 
 
 ### Is my data really private?
 
-When self-hosted properly, your audio and transcriptions never leave your server. However, the transcription and summarization APIs (OpenAI, OpenRouter) do process your content on their servers. For complete privacy, you'd need to use local models for both transcription and summarization, which requires significant computational resources.
+When self-hosted properly, your audio and transcriptions never leave your server. However, cloud transcription and summarization APIs do process your content on their servers. For complete privacy, you'd need to use local models for both transcription and summarization, which requires significant computational resources.
 
 ### Can I use Speakr for confidential business meetings?
 
-Yes, with appropriate precautions. Self-hosting keeps data under your control, but consider your API provider's data policies. OpenAI and OpenRouter have different data retention and usage policies. For maximum security, use local transcription and summarization models, though this requires powerful hardware and technical expertise.
+Yes, with appropriate precautions. Self-hosting keeps data under your control, but consider your API provider's data policies. For maximum security, use local transcription and summarization models, though this requires powerful hardware and technical expertise.
 
 ### Are share links secure?
 

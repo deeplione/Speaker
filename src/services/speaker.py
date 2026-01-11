@@ -9,6 +9,7 @@ from flask import current_app
 from flask_login import current_user
 
 from src.database import db
+from src.config.app_config import ENABLE_LLM_FEATURES
 from src.models import Speaker, SystemSetting
 from src.services.llm import call_llm_completion
 from src.utils import safe_json_loads
@@ -75,6 +76,9 @@ def identify_speakers_from_text(transcription):
     """
     Uses an LLM to identify speakers from a transcription.
     """
+    if not ENABLE_LLM_FEATURES:
+        current_app.logger.info("LLM features disabled; skipping speaker identification.")
+        return {}
     if not TEXT_MODEL_API_KEY:
         raise ValueError("TEXT_MODEL_API_KEY not configured.")
 
@@ -143,6 +147,9 @@ def identify_unidentified_speakers_from_text(transcription, unidentified_speaker
     """
     Uses an LLM to identify only the unidentified speakers from a transcription.
     """
+    if not ENABLE_LLM_FEATURES:
+        current_app.logger.info("LLM features disabled; skipping speaker identification.")
+        return {}
     if not TEXT_MODEL_API_KEY:
         raise ValueError("TEXT_MODEL_API_KEY not configured.")
 
@@ -216,4 +223,3 @@ JSON Response:
     except Exception as e:
         current_app.logger.error(f"Error calling LLM for speaker identification: {e}", exc_info=True)
         raise
-

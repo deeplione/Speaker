@@ -16,7 +16,7 @@ from src.models import *
 from src.utils import *
 from src.config.version import get_version
 from src.services.llm import TEXT_MODEL_BASE_URL, TEXT_MODEL_NAME
-from src.config.app_config import ASR_BASE_URL
+from src.config.app_config import ASR_BASE_URL, transcription_base_url, ENABLE_LLM_FEATURES
 
 # Create blueprint
 system_bp = Blueprint('system', __name__)
@@ -91,9 +91,9 @@ def get_system_info():
         
         return jsonify({
             'version': version,
-            'llm_endpoint': TEXT_MODEL_BASE_URL,
-            'llm_model': TEXT_MODEL_NAME,
-            'whisper_endpoint': os.environ.get('TRANSCRIPTION_BASE_URL', 'https://api.openai.com/v1'),
+            'llm_endpoint': TEXT_MODEL_BASE_URL if ENABLE_LLM_FEATURES else None,
+            'llm_model': TEXT_MODEL_NAME if ENABLE_LLM_FEATURES else None,
+            'whisper_endpoint': ASR_BASE_URL if USE_ASR_ENDPOINT else transcription_base_url,
             'asr_enabled': USE_ASR_ENDPOINT,
             'asr_endpoint': ASR_BASE_URL if USE_ASR_ENDPOINT else None
         })
@@ -189,6 +189,4 @@ def check_deletion_permission():
     except Exception as e:
         current_app.logger.error(f"Error checking deletion permissions: {e}")
         return jsonify({'error': str(e)}), 500
-
-
 
