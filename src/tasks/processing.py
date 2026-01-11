@@ -1319,8 +1319,13 @@ def transcribe_audio_asr(app_context, recording_id, filepath, original_filename,
                 current_app.logger.error(f"Timeout details - configured ASR timeout: {asr_timeout}s. Error: {error_msg}")
                 user_error_msg = f"ASR processing timed out. Error: {error_msg}"
             elif "name or service not known" in error_msg_lower or "temporary failure in name resolution" in error_msg_lower:
+                asr_base_url_display = ASR_BASE_URL or "<unset>"
+                current_app.logger.error(
+                    "ASR endpoint resolution failed for ASR_BASE_URL=%s",
+                    asr_base_url_display,
+                )
                 user_error_msg = (
-                    "ASR processing failed: unable to resolve ASR_BASE_URL. "
+                    f"ASR processing failed: unable to resolve ASR_BASE_URL ({asr_base_url_display}). "
                     "Verify ASR_BASE_URL points to a reachable host (use the ASR service name "
                     "when running via Docker Compose)."
                 )
