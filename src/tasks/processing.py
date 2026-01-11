@@ -1313,10 +1313,17 @@ def transcribe_audio_asr(app_context, recording_id, filepath, original_filename,
             error_type = type(e).__name__
             current_app.logger.error(f"ASR processing FAILED for recording {recording_id}: [{error_type}] {error_msg}")
 
-            if "timed out" in error_msg.lower() or "timeout" in error_msg.lower() or "Timeout" in error_type:
+            error_msg_lower = error_msg.lower()
+            if "timed out" in error_msg_lower or "timeout" in error_msg_lower or "Timeout" in error_type:
                 asr_timeout = SystemSetting.get_setting('asr_timeout_seconds', 1800)
                 current_app.logger.error(f"Timeout details - configured ASR timeout: {asr_timeout}s. Error: {error_msg}")
                 user_error_msg = f"ASR processing timed out. Error: {error_msg}"
+            elif "name or service not known" in error_msg_lower or "temporary failure in name resolution" in error_msg_lower:
+                user_error_msg = (
+                    "ASR processing failed: unable to resolve ASR_BASE_URL. "
+                    "Verify ASR_BASE_URL points to a reachable host (use the ASR service name "
+                    "when running via Docker Compose)."
+                )
             else:
                 user_error_msg = f"ASR processing failed: {error_msg}"
 
