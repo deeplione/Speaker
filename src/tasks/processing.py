@@ -43,11 +43,11 @@ def _sanitize_asr_base_url(base_url):
     try:
         parsed = urlsplit(base_url)
     except ValueError:
-        return base_url
+        return "<invalid>"
 
     hostname = parsed.hostname or ""
     netloc = f"{hostname}:{parsed.port}" if parsed.port else hostname
-    return urlunsplit((parsed.scheme, netloc, parsed.path, "", ""))
+    return urlunsplit((parsed.scheme, netloc, "", "", ""))
 
 
 def apply_team_tag_auto_shares(recording_id):
